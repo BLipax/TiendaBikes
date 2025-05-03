@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>MotoParts Express</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    h1 { color: #333; }
+    .repuesto { border: 1px solid #ccc; padding: 1rem; margin: 1rem 0; border-radius: 5px; }
+    form { margin-top: 2rem; }
+    input, button { margin: 0.5rem 0; padding: 0.5rem; width: 100%; }
+  </style>
+</head>
+<body>
+  <h1>Repuestos disponibles</h1>
+  <div id="repuestos-container">Cargando repuestos...</div>
+
+  <h2>Agregar nuevo repuesto</h2>
+  <form id="form-repuesto">
+    <input type="text" id="nombre" placeholder="Nombre del repuesto" required />
+    <input type="text" id="descripcion" placeholder="Descripción del repuesto" required />
+    <input type="number" id="precio" placeholder="Precio" required />
+    <input type="number" id="stock" placeholder="Stock" required />
+    <button type="submit">Agregar Repuesto</button>
+  </form>
+
+  <script>
+    const apiUrl = 'http://127.0.0.1:8000/api/productos/';
+
+    // Mostrar repuestos
+    function cargarRepuestos() {
+      fetch(apiUrl)
+        .then(res => res.json())
+        .then(data => {
+          const contenedor = document.getElementById('repuestos-container');
+          contenedor.innerHTML = '';
+          data.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'repuesto';
+            div.innerHTML = `
+              <h2>${item.nombre}</h2>
+              <p><strong>Descripción:</strong> ${item.descripcion}</p>
+              <p><strong>Precio:</strong> $${item.precio}</p>
+              <p><strong>Stock:</strong> ${item.stock}</p>
+            `;
+            contenedor.appendChild(div);
+          });
+        })
+        .catch(err => console.error('Error cargando repuestos:', err));
+    }
+
+    cargarRepuestos();
+
+    // Agregar nuevo repuesto
+    document.getElementById('form-repuesto').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const nuevo = {
+        nombre: document.getElementById('nombre').value,
+        descripcion: document.getElementById('descripcion').value,
+        precio: parseFloat(document.getElementById('precio').value),  // Convertir a número
+        stock: parseInt(document.getElementById('stock').value) // Convertir a número
+      };
+
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(nuevo)
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Error al agregar repuesto.");
+        return res.json();
+      })
+      .then(() => {
+        cargarRepuestos();
+        document.getElementById('form-repuesto').reset();
+      })
+      .catch(err => alert(err.message));
+    });
+  </script>
+</body>
+</html>
