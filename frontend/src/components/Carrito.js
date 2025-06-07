@@ -17,7 +17,7 @@ function Carrito() {
   const handlePagar = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/productos/iniciar_pago/', {
+      const response = await fetch('https://tiendabikes-1.onrender.com/api/productos/iniciar_pago/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ total: total.toFixed(2) }),

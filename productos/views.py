@@ -59,7 +59,7 @@ def iniciar_pago(request):
     session_id = str(uuid.uuid4())[:10]  # Sesión del usuario / compra
 
     # URL donde Webpay redirige tras el pago (debe estar accesible)
-    return_url = "http://localhost:3000/pago-exitoso"
+    return_url = "https://tiendabikes-1.onrender.com/pago-exitoso"
 
     response = transaction.create(
         buy_order=buy_order,

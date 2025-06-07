@@ -9,7 +9,7 @@ function Registro() {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8000/api/usuarios/registro/', form);
+      await axios.post('https://tiendabikes-1.onrender.com/api/usuarios/registro/', form);
       alert('Usuario registrado');
     } catch (err) {
       alert('Error al registrar');

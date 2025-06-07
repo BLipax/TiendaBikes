@@ -9,7 +9,7 @@ function PagoExitoso() {
   useEffect(() => {
     const actualizarStockBackend = async (items) => {
       try {
-        const response = await fetch('http://localhost:8000/api/productos/actualizar_stock/', {
+        const response = await fetch('https://tiendabikes-1.onrender.com/api/productos/actualizar_stock/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ items }),

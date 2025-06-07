@@ -9,7 +9,7 @@ function Login() {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:8000/api/usuarios/login/', form);
+      const res = await axios.post('https://tiendabikes-1.onrender.com/api/usuarios/login/', form);
       localStorage.setItem('access', res.data.access);
       alert('Login exitoso');
     } catch (err) {
