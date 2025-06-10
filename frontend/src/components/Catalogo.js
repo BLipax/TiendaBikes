@@ -55,8 +55,8 @@ function Catalogo() {
             <p>{p.descripcion}</p>
             <p><strong>Precio:</strong> ${p.precio}</p>
             <p><strong>Stock:</strong> {p.stock}</p>
-            <button onClick={() => addToCart(p)} className="cart-button">Añadir al carrito</button>
-            <button onClick={() => eliminarProducto(p.id)} className="delete-button">Eliminar producto</button>
+            <button className="boton-carrito" onClick={() => addToCart(p)}>Añadir al carrito</button>
+            <button className="boton-eliminar" onClick={() => eliminarProducto(p.id)}>Eliminar producto</button>
           </div>
         ))}
       </div>
