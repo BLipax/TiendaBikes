@@ -130,12 +130,11 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+     'DEFAULT_PAGINATION_CLASS': None,
 }
 
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
-}
+
+
 
 TRANSBANK_INTEGRATION_API_KEY = "TU_API_KEY"
 TRANSBANK_INTEGRATION_COMMERCE_CODE = "TU_COMMERCE_CODE"
