@@ -44,7 +44,7 @@ function Catalogo() {
     if (!window.confirm('¿Estás seguro de que quieres eliminar este producto?')) return;
 
     try {
-      await axios.delete(`${API_BASE_URL}/api/productos/producto/${id}/`);
+      await axios.delete(`${API_BASE_URL}/api/productos/${id}/`);
       alert('Producto eliminado');
       setProductos(prev => prev.filter(p => p.id !== id));
     } catch (error) {
