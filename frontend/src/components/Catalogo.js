@@ -6,110 +6,59 @@ import { useCart } from '../context/CartContext';
 
 function Catalogo() {
   const [productos, setProductos] = useState([]);
-  const { mensajeProducto , addToCart } = useCart();
+  const { mensajeProducto, addToCart } = useCart();
 
   useEffect(() => {
     axios.get('https://tiendabikes-1.onrender.com/api/productos/')
       .then(res => setProductos(res.data))
-      .catch(err => console.error(err));
+      .catch(console.error);
   }, []);
 
   const eliminarProducto = async (id) => {
-  const confirm = window.confirm("¿Estás seguro que quieres eliminar este producto?");
-  if (!confirm) return;
+    if (!window.confirm("¿Estás seguro que quieres eliminar este producto?")) return;
 
-  try {
-    await axios.delete(`https://tiendabikes-1.onrender.com/api/productos/${id}/`);
-    setProductos(productos.filter(p => p.id !== id));
-  } catch (err) {
-    alert("Error al eliminar el producto.");
-    console.error(err);
-  }
-};
+    try {
+      await axios.delete(`https://tiendabikes-1.onrender.com/api/productos/${id}/`);
+      setProductos((prev) => prev.filter(p => p.id !== id));
+    } catch (err) {
+      alert("Error al eliminar el producto.");
+      console.error(err);
+    }
+  };
 
   return (
-    <div style={{ maxWidth: 800, margin: '20px auto', textAlign: 'center' }}>
+    <div className="catalogo-container">
       {mensajeProducto && (
-        <div
-          style={{
-            backgroundColor: '#d4edda',
-            color: '#155724',
-            padding: '10px',
-            borderRadius: '5px',
-            marginBottom: '20px',
-            fontWeight: 'bold',
-          }}
-        >
+        <div className="mensaje-producto">
           {mensajeProducto}
         </div>
       )}
 
-      <div style={{ padding: '20px' }}>
-        <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Catálogo de Productos</h1>
+      <h1>Catálogo de Productos</h1>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
-          <Link to="/agregar">
-            <button style={{
-              padding: '10px 15px',
-              backgroundColor: '#28a745',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              fontWeight: 'bold',
-              cursor: 'pointer'
-            }}>
-              + Agregar producto
-            </button>
-          </Link>
-        </div>
+      <div className="add-button-wrapper">
+        <Link to="/agregar">
+          <button className="add-button">+ Agregar producto</button>
+        </Link>
+      </div>
 
-        <div className="productos-grid" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: '20px'}}>
-          {productos.map(p => (
-            <div key={p.id} className="producto-card" style={{border: '1px solid #ddd', padding: '15px', borderRadius: '5px', textAlign: 'left'}}>
-              <h3>{p.nombre}</h3>
-              {p.imagen && (
-                <img
-                  src={p.imagen.startsWith('http') ? p.imagen : `https://tiendabikes-1.onrender.com${p.imagen}`}
-                  alt={p.nombre}
-                  style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '4px' }}
-                />
-              )}
-              <p>{p.descripcion}</p>
-              <p><strong>Precio: </strong>${p.precio}</p>
-              <p><strong>Stock:</strong> {p.stock}</p>
-              <button 
-                onClick={() => addToCart(p)} 
-                style={{
-                  marginTop: '10px',
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-              >
-                Añadir al carrito
-              </button>
-
-              <button
-                onClick={() => eliminarProducto(p.id)}
-                style={{
-                  marginTop: '10px',
-                  backgroundColor: '#dc3545',
-                  color: 'white',
-                  border: 'none',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-              >
-                Eliminar producto
-              </button>
-
-            </div>
-          ))}
-        </div>
+      <div className="productos-grid">
+        {productos.map(p => (
+          <div key={p.id} className="producto-card">
+            <h3>{p.nombre}</h3>
+            {p.imagen && (
+              <img
+                src={p.imagen.startsWith('http') ? p.imagen : `https://tiendabikes-1.onrender.com${p.imagen}`}
+                alt={p.nombre}
+              />
+            )}
+            <p>{p.descripcion}</p>
+            <p><strong>Precio:</strong> ${p.precio}</p>
+            <p><strong>Stock:</strong> {p.stock}</p>
+            <button onClick={() => addToCart(p)} className="cart-button">Añadir al carrito</button>
+            <button onClick={() => eliminarProducto(p.id)} className="delete-button">Eliminar producto</button>
+          </div>
+        ))}
       </div>
     </div>
   );

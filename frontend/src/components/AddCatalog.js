@@ -1,43 +1,43 @@
 import React, { useState } from 'react';
-import './AddCatalog.css';
 import { useNavigate } from 'react-router-dom';
+import './AddCatalog.css';
 
 function AddCatalog() {
-  const [nombre, setNombre] = useState('');
-  const [descripcion, setDescripcion] = useState('');
-  const [precio, setPrecio] = useState('');
-  const [stock, setStock] = useState('');
-  const [imagen, setImagen] = useState(null);
+  const [formData, setFormData] = useState({
+    nombre: '',
+    descripcion: '',
+    precio: '',
+    stock: '',
+    imagen: null
+  });
   const [mensaje, setMensaje] = useState('');
-
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append('nombre', nombre);
-    formData.append('descripcion', descripcion);
-    formData.append('precio', precio);
-    formData.append('stock', stock);
-    if (imagen) {
-      formData.append('imagen', imagen);
-    }
+    const data = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== null && value !== '') data.append(key, value);
+    });
 
     try {
       const response = await fetch('https://tiendabikes-1.onrender.com/api/productos/', {
         method: 'POST',
-        body: formData,
+        body: data
       });
 
       if (response.ok) {
         setMensaje('Producto agregado exitosamente');
-        // limpiar campos
-        setNombre('');
-        setDescripcion('');
-        setPrecio('');
-        setStock('');
-        setImagen(null);
+        setFormData({ nombre: '', descripcion: '', precio: '', stock: '', imagen: null });
         navigate('/');
       } else {
         setMensaje('Error al crear el producto');
@@ -48,61 +48,34 @@ function AddCatalog() {
   };
 
   return (
-        <form onSubmit={handleSubmit} encType="multipart/form-data" className="form-container">
-          <div className="form-group">
-            <label>Nombre:</label>
+    <form onSubmit={handleSubmit} encType="multipart/form-data" className="form-container">
+      {['nombre', 'descripcion', 'precio', 'stock'].map((field) => (
+        <div className="form-group" key={field}>
+          <label>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
+          {field === 'descripcion' ? (
+            <textarea name={field} value={formData[field]} onChange={handleChange} required />
+          ) : (
             <input
-              type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
+              type={field === 'precio' || field === 'stock' ? 'number' : 'text'}
+              step={field === 'precio' ? '0.01' : undefined}
+              name={field}
+              value={formData[field]}
+              onChange={handleChange}
               required
             />
-          </div>
-    
-          <div className="form-group">
-            <label>Descripción:</label>
-            <textarea
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
-              required
-            />
-          </div>
-    
-          <div className="form-group">
-            <label>Precio:</label>
-            <input
-              type="number"
-              step="0.01"
-              value={precio}
-              onChange={(e) => setPrecio(e.target.value)}
-              required
-            />
-          </div>
-    
-          <div className="form-group">
-            <label>Stock:</label>
-            <input
-              type="number"
-              value={stock}
-              onChange={(e) => setStock(e.target.value)}
-              required
-            />
-          </div>
-    
-          <div className="form-group">
-            <label>Imagen:</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setImagen(e.target.files[0])}
-            />
-          </div>
-    
-          <button type="submit" className="form-button">Crear Producto</button>
-    
-          <p className="form-message">{mensaje}</p>
-        </form>
-      );
-    }
-    
-    export default AddCatalog;
+          )}
+        </div>
+      ))}
+
+      <div className="form-group">
+        <label>Imagen:</label>
+        <input type="file" name="imagen" accept="image/*" onChange={handleChange} />
+      </div>
+
+      <button type="submit" className="form-button">Crear Producto</button>
+      <p className="form-message">{mensaje}</p>
+    </form>
+  );
+}
+
+export default AddCatalog;
