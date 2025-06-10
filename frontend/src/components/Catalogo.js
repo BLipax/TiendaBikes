@@ -15,17 +15,16 @@ function Catalogo() {
   }, []);
 
   const eliminarProducto = async (id) => {
-    if (!window.confirm("¿Estás seguro que quieres eliminar este producto?")) return;
+    if (!window.confirm('¿Estás seguro de que quieres eliminar este producto?')) return;
 
     try {
-      await axios.delete(`https://tiendabikes-1.onrender.com/api/productos/${id}/`);
-      setProductos((prev) => prev.filter(p => p.id !== id));
-    } catch (err) {
-      alert("Error al eliminar el producto.");
-      console.error(err);
+      await axios.delete(`https://tiendabikes-1.onrender.com/api/productos/productos/${id}/`);
+      alert('Producto eliminado');
+      setProductos(prev => prev.filter(p => p.id !== id));
+    } catch (error) {
+      alert('Error al eliminar el producto');
     }
   };
-
   return (
     <div className="catalogo-container">
       {mensajeProducto && (
