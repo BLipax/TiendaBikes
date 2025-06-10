@@ -24,7 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/usuarios/', include('usuarios.urls')),
     path('api/productos/', include('productos.urls')),
-    path('', RedirectView.as_view(url='/api/productos/', permanent=False)),
+    #path('', RedirectView.as_view(url='/api/productos/', permanent=False)),
 ]
 
 if settings.DEBUG:
