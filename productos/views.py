@@ -113,34 +113,34 @@ def pago_exitoso(request):
 # Create your views here.
 
 @csrf_exempt  # Para evitar problemas de CSRF en pruebas, luego lo puedes mejorar
-def actualizar_stock(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            items = data.get('items', [])
-
-            for item in items:
-                producto_id = item.get('id')
-                cantidad_comprada = item.get('cantidad')
-
-                producto = Producto.objects.get(id=producto_id)
-                if producto.stock >= cantidad_comprada:
-                    producto.stock -= cantidad_comprada
-                    producto.save()
-                else:
-                    return JsonResponse({'error': f'Stock insuficiente para {producto.nombre}'}, status=400)
-
-            return JsonResponse({'mensaje': 'Stock actualizado correctamente'})
-
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
-
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-from productos.models import Producto
+#def actualizar_stock(request):
+#    if request.method == "POST":
+#        try:
+#            data = json.loads(request.body)
+#            items = data.get('items', [])
+#
+#            for item in items:
+#                producto_id = item.get('id')
+#                cantidad_comprada = item.get('cantidad')
+#
+#                producto = Producto.objects.get(id=producto_id)
+#                if producto.stock >= cantidad_comprada:
+#                    producto.stock -= cantidad_comprada
+#                    producto.save()
+#                else:
+#                    return JsonResponse({'error': f'Stock insuficiente para {producto.nombre}'}, status=400)
+#
+#            return JsonResponse({'mensaje': 'Stock actualizado correctamente'})
+#
+#       except Exception as e:
+#            return JsonResponse({'error': str(e)}, status=400)
+#
+#    return JsonResponse({'error': 'Método no permitido'}, status=405)
+#
+#from rest_framework.decorators import api_view
+#from rest_framework.response import Response
+#from rest_framework import status
+#from productos.models import Producto
 
 @api_view(['POST'])
 def actualizar_stock(request):
