@@ -14,6 +14,19 @@ function Catalogo() {
       .catch(err => console.error(err));
   }, []);
 
+  const eliminarProducto = async (id) => {
+  const confirm = window.confirm("¿Estás seguro que quieres eliminar este producto?");
+  if (!confirm) return;
+
+  try {
+    await axios.delete(`https://tiendabikes-1.onrender.com/api/productos/${id}/`);
+    setProductos(productos.filter(p => p.id !== id));
+  } catch (err) {
+    alert("Error al eliminar el producto.");
+    console.error(err);
+  }
+};
+
   return (
     <div style={{ maxWidth: 800, margin: '20px auto', textAlign: 'center' }}>
       {mensajeProducto && (
@@ -56,7 +69,7 @@ function Catalogo() {
               <h3>{p.nombre}</h3>
               {p.imagen && (
                 <img
-                  src={p.imagen.startsWith('http') ? p.imagen : `http://localhost:8000${p.imagen}`}
+                  src={p.imagen.startsWith('http') ? p.imagen : `https://tiendabikes-1.onrender.com${p.imagen}`}
                   alt={p.nombre}
                   style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '4px' }}
                 />
@@ -78,6 +91,22 @@ function Catalogo() {
               >
                 Añadir al carrito
               </button>
+
+              <button
+                onClick={() => eliminarProducto(p.id)}
+                style={{
+                  marginTop: '10px',
+                  backgroundColor: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 12px',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Eliminar producto
+              </button>
+
             </div>
           ))}
         </div>

@@ -19,6 +19,10 @@ import json
 
 import uuid
 
+class ProductoViewSet(viewsets.ModelViewSet):
+    queryset = Producto.objects.all()
+    serializer_class = ProductoSerializer
+
 class ProductoList(APIView):
     def get(self, request):
         productos = Producto.objects.all()
@@ -59,7 +63,7 @@ def iniciar_pago(request):
     session_id = str(uuid.uuid4())[:10]  # Sesión del usuario / compra
 
     # URL donde Webpay redirige tras el pago (debe estar accesible)
-    return_url = "https://tiendabikes-1.onrender.com/pago-exitoso"
+    return_url = "https://tiendabikes-1.onrender.com/Catalogo"
 
     response = transaction.create(
         buy_order=buy_order,
