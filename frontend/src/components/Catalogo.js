@@ -10,51 +10,56 @@ function Catalogo() {
   const [error, setError] = useState(null);
   const { mensajeProducto, addToCart } = useCart();
 
-  // Base URL from environment variable (or fallback for testing)
+  // URL base desde variable de entorno o fallback local
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://tiendabikes-1.onrender.com';
 
   useEffect(() => {
-    setLoading(true);
-    axios
-      .get(`${API_BASE_URL}/api/productos/`)
-      .then(res => {
+    const fetchProductos = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/productos/`);
         console.log('Respuesta de productos:', res.data);
-       if (Array.isArray(res.data.results)) {
-  setProductos(res.data.results);
-} else if (Array.isArray(res.data)) {
-  // Soporte para respuesta no paginada
-  setProductos(res.data);
-} else {
-  console.warn('La respuesta no tiene el formato esperado:', res.data);
-  setProductos([]);
-  setError('Formato de datos inesperado');
-}
-      })
-      .catch(err => {
+
+        // Soporte para DRF con paginación o sin ella
+        if (Array.isArray(res.data.results)) {
+          setProductos(res.data.results);
+        } else if (Array.isArray(res.data)) {
+          setProductos(res.data);
+        } else {
+          console.warn('La respuesta no es un array:', res.data);
+          setProductos([]);
+          setError('Formato de datos inesperado.');
+        }
+      } catch (err) {
         console.error('Error al obtener productos:', err);
-        setError('No se pudieron cargar los productos. Intenta de nuevo.');
         setProductos([]);
-      })
-      .finally(() => setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+        setError('No se pudieron cargar los productos. Intenta de nuevo.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProductos();
+  }, [API_BASE_URL]);
 
   const eliminarProducto = async (id) => {
     if (!window.confirm('¿Estás seguro de que quieres eliminar este producto?')) return;
 
     try {
       await axios.delete(`${API_BASE_URL}/api/productos/${id}/`);
-      alert('Producto eliminado');
-      setProductos(prev => prev.filter(p => p.id !== id));
-    } catch (error) {
+      alert('Producto eliminado correctamente.');
+      setProductos((prev) => prev.filter((p) => p.id !== id));
+    } catch (err) {
       const errorMessage =
-        error.response?.status === 404
-          ? 'Producto no encontrado'
-          : error.response?.status === 403
-          ? 'No tienes permiso para eliminar este producto'
-          : 'Error al eliminar el producto';
+        err.response?.status === 404
+          ? 'Producto no encontrado.'
+          : err.response?.status === 403
+          ? 'No tienes permiso para eliminar este producto.'
+          : 'Error al eliminar el producto.';
       alert(errorMessage);
-      console.error('Error al eliminar producto:', error);
+      console.error('Error al eliminar producto:', err);
     }
   };
 
@@ -66,7 +71,6 @@ function Catalogo() {
 
       <h1>Catálogo de Productos</h1>
 
-     
       {error && <p className="error-message">{error}</p>}
 
       <div className="add-button-wrapper">
@@ -76,8 +80,8 @@ function Catalogo() {
       </div>
 
       <div className="productos-grid">
-        {productos.length > 0 ? (
-          productos.map(p => (
+        {Array.isArray(productos) && productos.length > 0 ? (
+          productos.map((p) => (
             <div key={p.id} className="producto-card">
               <h3>{p.nombre}</h3>
               {p.imagen && (
