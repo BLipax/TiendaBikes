@@ -28,7 +28,7 @@ useEffect(() => {
     if (!window.confirm('¿Estás seguro de que quieres eliminar este producto?')) return;
 
     try {
-      await axios.delete(`https://tiendabikes-1.onrender.com/api/productos/productos/${id}/`);
+      await axios.delete(`https://tiendabikes-1.onrender.com/api/productos${id}/`);
       alert('Producto eliminado');
       setProductos(prev => prev.filter(p => p.id !== id));
     } catch (error) {
