@@ -15,7 +15,7 @@ function Catalogo() {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`${API_BASE_URL}/api/productos/productos/`)
+      .get(`${API_BASE_URL}/api/productos/`)
       .then(res => {
         console.log('Respuesta completa de productos:', res.data);
 
