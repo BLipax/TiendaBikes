@@ -8,20 +8,21 @@ function Catalogo() {
   const [productos, setProductos] = useState([]);
   const { mensajeProducto, addToCart } = useCart();
 
-  useEffect(() => {
+useEffect(() => {
   axios.get('https://tiendabikes-1.onrender.com/api/productos/')
     .then(res => {
+      console.log("Respuesta de productos:", res.data); // 👈 esto es clave
       if (Array.isArray(res.data)) {
         setProductos(res.data);
       } else {
-        console.error("La respuesta no es una lista:", res.data);
-        setProductos([]); // para evitar que crashee
+        console.warn("La respuesta no es un array:", res.data);
+        setProductos([]);
       }
     })
     .catch(err => {
-      console.error("Error al cargar productos", err);
+      console.error("Error al obtener productos:", err);
       setProductos([]);
-});
+    });
 }, []);
   const eliminarProducto = async (id) => {
     if (!window.confirm('¿Estás seguro de que quieres eliminar este producto?')) return;

@@ -10,10 +10,10 @@ router.register('productos', ProductoViewSet)
 router.register('ordenes', OrdenViewSet)
 
 urlpatterns = [
-    path('lista/', ProductoList.as_view(), name='producto-list'),  # ← esta ya no interfiere con el router
+    path('lista/', ProductoList.as_view(), name='producto-list'),
     path('iniciar_pago/', iniciar_pago, name='iniciar_pago'),
     path('webpay_respuesta/', webpay_respuesta, name='webpay_respuesta'),
     path("pago_exitoso/", pago_exitoso, name="pago_exitoso"),
     path('actualizar_stock/', actualizar_stock, name='actualizar_stock'),
-    path('', include(router.urls)),  # ← esto ahora sí funcionará correctamente
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('', include(router.urls)),  # ahora esto manejará /api/productos/
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
