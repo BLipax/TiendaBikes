@@ -30,7 +30,7 @@ function AddCatalog() {
     });
 
     try {
-      const response = await fetch('https://tiendabikes-1.onrender.com/api/productos/', {
+      const response = await fetch('https://tiendabikes-1.onrender.com/api/productos/productos/', {
         method: 'POST',
         body: data
       });
