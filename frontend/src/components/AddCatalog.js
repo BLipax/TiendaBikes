@@ -48,7 +48,7 @@ function AddCatalog() {
     setMensaje('');
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/productos/`, data, {
+      await axios.post(`${API_BASE_URL}/api/productos/`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -56,7 +56,6 @@ function AddCatalog() {
 
       setMensaje('Producto agregado exitosamente');
       setFormData({ nombre: '', descripcion: '', precio: '', stock: '', imagen: null });
-      // Delay redirect to show success message
       setTimeout(() => navigate('/'), 2000);
     } catch (error) {
       const errorMessage =
@@ -88,7 +87,7 @@ function AddCatalog() {
               name={field}
               value={formData[field]}
               onChange={handleChange}
-              required={field !== 'stock'} // Stock can be 0
+              required={field !== 'stock'}
               min={field === 'precio' ? '0.01' : field === 'stock' ? '0' : undefined}
             />
           )}
