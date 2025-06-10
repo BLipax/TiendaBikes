@@ -49,7 +49,7 @@ def iniciar_pago(request):
     transaction = Transaction(options)
     buy_order = str(uuid.uuid4())[:10]
     session_id = str(uuid.uuid4())[:10]
-    return_url = request.build_absolute_uri('/Catalogo')
+    return_url = request.build_absolute_uri('/')
 
     try:
         response = transaction.create(
