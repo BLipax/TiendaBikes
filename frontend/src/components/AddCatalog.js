@@ -48,7 +48,7 @@ function AddCatalog() {
     setMensaje('');
 
     try {
-      await axios.post(`${API_BASE_URL}/api/productos/`, data, {
+      await axios.post(`${API_BASE_URL}/api/productos/productos/`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
