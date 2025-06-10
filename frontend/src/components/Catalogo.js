@@ -19,13 +19,16 @@ function Catalogo() {
       .get(`${API_BASE_URL}/api/productos/`)
       .then(res => {
         console.log('Respuesta de productos:', res.data);
-        if (Array.isArray(res.data)) {
-          setProductos(res.data);
-        } else {
-          console.warn('La respuesta no es un array:', res.data);
-          setProductos([]);
-          setError('Formato de datos inesperado');
-        }
+       if (Array.isArray(res.data.results)) {
+  setProductos(res.data.results);
+} else if (Array.isArray(res.data)) {
+  // Soporte para respuesta no paginada
+  setProductos(res.data);
+} else {
+  console.warn('La respuesta no tiene el formato esperado:', res.data);
+  setProductos([]);
+  setError('Formato de datos inesperado');
+}
       })
       .catch(err => {
         console.error('Error al obtener productos:', err);
