@@ -9,7 +9,7 @@ function Catalogo() {
   const { mensajeProducto, addToCart } = useCart();
 
 useEffect(() => {
-  axios.get('https://tiendabikes-1.onrender.com/api/productos/')
+  axios.get('https://tiendabikes-1.onrender.com/api/productos/productos/')
     .then(res => {
       console.log("Respuesta de productos:", res.data); // 👈 esto es clave
       if (Array.isArray(res.data)) {
