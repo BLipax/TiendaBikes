@@ -9,11 +9,20 @@ function Catalogo() {
   const { mensajeProducto, addToCart } = useCart();
 
   useEffect(() => {
-    axios.get('https://tiendabikes-1.onrender.com/api/productos/')
-      .then(res => setProductos(res.data))
-      .catch(console.error);
-  }, []);
-
+  axios.get('https://tiendabikes-1.onrender.com/api/productos/')
+    .then(res => {
+      if (Array.isArray(res.data)) {
+        setProductos(res.data);
+      } else {
+        console.error("La respuesta no es una lista:", res.data);
+        setProductos([]); // para evitar que crashee
+      }
+    })
+    .catch(err => {
+      console.error("Error al cargar productos", err);
+      setProductos([]);
+});
+}, []);
   const eliminarProducto = async (id) => {
     if (!window.confirm('¿Estás seguro de que quieres eliminar este producto?')) return;
 
