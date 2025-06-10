@@ -4,7 +4,7 @@
 .pnp.js
 
 # build
-/build
+
 
 # environment variables
 .env
