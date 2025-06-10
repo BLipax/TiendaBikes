@@ -19,9 +19,6 @@ import json
 
 import uuid
 
-class ProductoViewSet(viewsets.ModelViewSet):
-    queryset = Producto.objects.all()
-    serializer_class = ProductoSerializer
 
 class ProductoList(APIView):
     def get(self, request):
