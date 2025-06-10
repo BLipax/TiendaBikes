@@ -4,10 +4,11 @@ from usuarios.serializers import RegistroSerializer
 
 
 class ProductoSerializer(serializers.ModelSerializer):
+    imagen = serializers.ImageField(use_url=True)
     class Meta:
         model = Producto
         fields = "__all__"
-        imagen = serializers.ImageField(use_url=True)
+        
 
 class OrdenSerializer(serializers.ModelSerializer):
     class Meta:

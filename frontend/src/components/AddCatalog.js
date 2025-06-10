@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './AddCatalog.css';
 
@@ -8,42 +9,68 @@ function AddCatalog() {
     descripcion: '',
     precio: '',
     stock: '',
-    imagen: null
+    imagen: null,
   });
   const [mensaje, setMensaje] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Base URL for the backend
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://tiendabikes-1.onrender.com';
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: files ? files[0] : value
-    }));
+    setFormData({
+      ...formData,
+      [name]: files ? files[0] : value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Client-side validation
+    if (formData.precio && Number(formData.precio) <= 0) {
+      setMensaje('El precio debe ser mayor que 0');
+      return;
+    }
+    if (formData.stock && Number(formData.stock) < 0) {
+      setMensaje('El stock no puede ser negativo');
+      return;
+    }
 
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       if (value !== null && value !== '') data.append(key, value);
     });
 
+    setLoading(true);
+    setMensaje('');
+
     try {
-      const response = await fetch('https://tiendabikes-1.onrender.com/api/productos/', {
-        method: 'POST',
-        body: data
+      const response = await axios.post(`${API_BASE_URL}/api/productos/`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
-      if (response.ok) {
-        setMensaje('Producto agregado exitosamente');
-        setFormData({ nombre: '', descripcion: '', precio: '', stock: '', imagen: null });
-        navigate('/');
-      } else {
-        setMensaje('Error al crear el producto');
-      }
+      setMensaje('Producto agregado exitosamente');
+      setFormData({ nombre: '', descripcion: '', precio: '', stock: '', imagen: null });
+      // Delay redirect to show success message
+      setTimeout(() => navigate('/'), 2000);
     } catch (error) {
-      setMensaje('Error en la conexión');
+      const errorMessage =
+        error.response?.status === 400
+          ? 'Datos inválidos. Verifica los campos e intenta de nuevo.'
+          : error.response?.status === 403
+          ? 'No tienes permiso para crear productos.'
+          : error.response?.status === 500
+          ? 'Error en el servidor. Intenta de nuevo más tarde.'
+          : 'Error al conectar con el servidor.';
+      setMensaje(errorMessage);
+      console.error('Error al crear producto:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -61,7 +88,8 @@ function AddCatalog() {
               name={field}
               value={formData[field]}
               onChange={handleChange}
-              required
+              required={field !== 'stock'} // Stock can be 0
+              min={field === 'precio' ? '0.01' : field === 'stock' ? '0' : undefined}
             />
           )}
         </div>
@@ -72,8 +100,10 @@ function AddCatalog() {
         <input type="file" name="imagen" accept="image/*" onChange={handleChange} />
       </div>
 
-      <button type="submit" className="form-button">Crear Producto</button>
-      <p className="form-message">{mensaje}</p>
+      <button type="submit" className="form-button" disabled={loading}>
+        {loading ? 'Creando...' : 'Crear Producto'}
+      </button>
+      {mensaje && <p className="form-message">{mensaje}</p>}
     </form>
   );
 }

@@ -12,16 +12,17 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from transbank.common.options import WebpayOptions
 from transbank.webpay.webpay_plus.transaction import Transaction
 import uuid
-from decouple import config
 
 # Producto and Orden ViewSets
 class ProductoViewSet(viewsets.ModelViewSet):
     queryset = Producto.objects.all()
     serializer_class = ProductoSerializer
+    permission_classes = [AllowAny]  # For testing
 
 class OrdenViewSet(viewsets.ModelViewSet):
     queryset = Orden.objects.all()
     serializer_class = OrdenSerializer
+    permission_classes = [AllowAny]  # For testing
 
 # User Registration
 User = get_user_model()
@@ -40,8 +41,8 @@ def iniciar_pago(request):
         return Response({"error": "Debes enviar un monto 'total'"}, status=status.HTTP_400_BAD_REQUEST)
 
     options = WebpayOptions(
-        commerce_code=config('WEBPAY_COMMERCE_CODE', default='597055555532'),
-        api_key=config('WEBPAY_API_KEY', default='579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C'),
+        commerce_code='597055555532',
+        api_key='579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C',
         integration_type='TEST'
     )
 
@@ -73,8 +74,8 @@ def webpay_respuesta(request):
         return Response({"error": "Falta el token de pago (token_ws)"}, status=status.HTTP_400_BAD_REQUEST)
 
     options = WebpayOptions(
-        commerce_code=config('WEBPAY_COMMERCE_CODE', default='597055555532'),
-        api_key=config('WEBPAY_API_KEY', default='579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C'),
+        commerce_code='597055555532',
+        api_key='579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C',
         integration_type='TEST'
     )
 
@@ -94,13 +95,13 @@ def webpay_respuesta(request):
 
 # Payment Success Confirmation
 @api_view(['GET'])
-def pago_exitoso(request):
+def pago_exito(request):
     return Response({
         "estado": "exitoso",
         "mensaje": "El pago se ha procesado correctamente"
     })
 
-# Stock Update (Single Version)
+# Stock Update
 @api_view(['POST'])
 def actualizar_stock(request):
     """

@@ -6,44 +6,65 @@ import { useCart } from '../context/CartContext';
 
 function Catalogo() {
   const [productos, setProductos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { mensajeProducto, addToCart } = useCart();
 
-useEffect(() => {
-  axios.get('https://tiendabikes-1.onrender.com/api/productos/productos/')
-    .then(res => {
-      console.log("Respuesta de productos:", res.data); // 👈 esto es clave
-      if (Array.isArray(res.data)) {
-        setProductos(res.data);
-      } else {
-        console.warn("La respuesta no es un array:", res.data);
+  // Base URL from environment variable (or fallback for testing)
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://tiendabikes-1.onrender.com';
+
+  useEffect(() => {
+    setLoading(true);
+    axios
+      .get(`${API_BASE_URL}/api/productos/`)
+      .then(res => {
+        console.log('Respuesta de productos:', res.data);
+        if (Array.isArray(res.data)) {
+          setProductos(res.data);
+        } else {
+          console.warn('La respuesta no es un array:', res.data);
+          setProductos([]);
+          setError('Formato de datos inesperado');
+        }
+      })
+      .catch(err => {
+        console.error('Error al obtener productos:', err);
+        setError('No se pudieron cargar los productos. Intenta de nuevo.');
         setProductos([]);
-      }
-    })
-    .catch(err => {
-      console.error("Error al obtener productos:", err);
-      setProductos([]);
-    });
-}, []);
+      })
+      .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const eliminarProducto = async (id) => {
     if (!window.confirm('¿Estás seguro de que quieres eliminar este producto?')) return;
 
     try {
-      await axios.delete(`https://tiendabikes-1.onrender.com/api/productos${id}/`);
+      await axios.delete(`${API_BASE_URL}/api/productos/${id}/`);
       alert('Producto eliminado');
       setProductos(prev => prev.filter(p => p.id !== id));
     } catch (error) {
-      alert('Error al eliminar el producto');
+      const errorMessage =
+        error.response?.status === 404
+          ? 'Producto no encontrado'
+          : error.response?.status === 403
+          ? 'No tienes permiso para eliminar este producto'
+          : 'Error al eliminar el producto';
+      alert(errorMessage);
+      console.error('Error al eliminar producto:', error);
     }
   };
+
   return (
     <div className="catalogo-container">
       {mensajeProducto && (
-        <div className="mensaje-producto">
-          {mensajeProducto}
-        </div>
+        <div className="mensaje-producto">{mensajeProducto}</div>
       )}
 
       <h1>Catálogo de Productos</h1>
+
+     
+      {error && <p className="error-message">{error}</p>}
 
       <div className="add-button-wrapper">
         <Link to="/agregar">
@@ -52,22 +73,38 @@ useEffect(() => {
       </div>
 
       <div className="productos-grid">
-        {productos.map(p => (
-          <div key={p.id} className="producto-card">
-            <h3>{p.nombre}</h3>
-            {p.imagen && (
-              <img  className="producto-img"
-                src={p.imagen.startsWith('http') ? p.imagen : `https://tiendabikes-1.onrender.com${p.imagen}`}
-                alt={p.nombre}
-              />
-            )}
-            <p>{p.descripcion}</p>
-            <p><strong>Precio:</strong> ${p.precio}</p>
-            <p><strong>Stock:</strong> {p.stock}</p>
-            <button className="boton-carrito" onClick={() => addToCart(p)}>Añadir al carrito</button>
-            <button className="boton-eliminar" onClick={() => eliminarProducto(p.id)}>Eliminar producto</button>
-          </div>
-        ))}
+        {productos.length > 0 ? (
+          productos.map(p => (
+            <div key={p.id} className="producto-card">
+              <h3>{p.nombre}</h3>
+              {p.imagen && (
+                <img
+                  className="producto-img"
+                  src={
+                    p.imagen.startsWith('http')
+                      ? p.imagen
+                      : `${API_BASE_URL}${p.imagen}`
+                  }
+                  alt={p.nombre}
+                />
+              )}
+              <p>{p.descripcion}</p>
+              <p><strong>Precio:</strong> ${p.precio}</p>
+              <p><strong>Stock:</strong> {p.stock}</p>
+              <button className="boton-carrito" onClick={() => addToCart(p)}>
+                Añadir al carrito
+              </button>
+              <button
+                className="boton-eliminar"
+                onClick={() => eliminarProducto(p.id)}
+              >
+                Eliminar producto
+              </button>
+            </div>
+          ))
+        ) : (
+          !loading && <p>No hay productos disponibles.</p>
+        )}
       </div>
     </div>
   );
