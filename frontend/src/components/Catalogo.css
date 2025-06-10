@@ -32,11 +32,13 @@
   }
   
   .producto-img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 4px;
-  }
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+}
+
 
   .boton-carrito {
   background-color: #007bff;

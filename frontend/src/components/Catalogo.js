@@ -56,7 +56,7 @@ useEffect(() => {
           <div key={p.id} className="producto-card">
             <h3>{p.nombre}</h3>
             {p.imagen && (
-              <img
+              <img  className="producto-img"
                 src={p.imagen.startsWith('http') ? p.imagen : `https://tiendabikes-1.onrender.com${p.imagen}`}
                 alt={p.nombre}
               />
